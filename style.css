@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&display=swap');
+
 body{margin:40px
   auto;max-width:650px;
   line-height:1.6;
@@ -10,3 +12,23 @@ body{margin:40px
 h1,h2,h3{
   line-height:1.2
 }
+
+details {
+  border-bottom: 1px solid #ccc;
+  padding: 0.5em 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+}
+
+summary::marker {
+  display: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
