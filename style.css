@@ -32,3 +32,8 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+::selection {
+  background: #b388ff; /* light purple */
+  color: white;        /* optional: makes selected text readable */
+}
+
