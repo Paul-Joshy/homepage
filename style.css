@@ -87,7 +87,7 @@ caption {
 }
 
 /* 🔽 Responsive Card Style Table for Mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   table,
   thead,
   tbody,
