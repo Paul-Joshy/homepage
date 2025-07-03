@@ -12,12 +12,34 @@
     <p>A repository to check general linux tips I find online that I haven't memorised.</p>
 
     <h2>Vim tips</h2>
-    <h3>Make the cursor fly around.</h3>
-    <ul>
-      <li>
-        <pre>:set virtualedit=all</pre>
-        <p>Treat the editor as blocks, instead of lines. So you can paste a vertial block next to another vertical block.</p>
-      </li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+        <th>Behavior</th>
+        <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Behavior"><pre>:set virtualedit=all</pre></td>
+          <td data-label="Action">Treat the editor as a canvas. Paste blocks anywhere without vim converting them into lines.</td>
+        </tr>
+        <tr>
+          <td data-label="Behavior"><pre>gJ</pre></td>
+          <td data-label="Action">Join multiple lines</td>
+        </tr>
+        <tr>
+          <td data-label="Behavior"><pre>:tabe</pre></td>
+          <td data-label="Action">Open new tab</td>
+        </tr>
+        <tr>
+          <td data-label="Behavior"><pre>gt</pre></td>
+          <td data-label="Action">Toggle between tabs</td>
+        <<tr>
+          <td data-label="Behavior"><pre>g?</pre></td>
+          <td data-label="Action">Ceasar cypher existing doc</td>
+        </tr>/tr>
+      </tbody>
+    </table>
   </body>
 </html>
