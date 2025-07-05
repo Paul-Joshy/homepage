@@ -15,23 +15,24 @@
       line-height: 2;
       font-size: 1.5rem;
     }
-    #container {
-      white-space: pre-wrap;
-    }
-    .word {
-      opacity: 0;
-      display: inline-block;
-      transition: opacity 1s ease-in, transform 1s ease;
-      transform: translateY(10px);
-    }
-    .word.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* #container { */
+    /*   white-space: pre-wrap; */
+    /* } */
+    /* .word { */
+    /*   opacity: 0; */
+    /*   display: inline-block; */
+    /*   transition: opacity 1s ease-in, transform 1s ease; */
+    /*   transform: translateY(10px); */
+    /* } */
+    /* .word.show { */
+    /*   opacity: 1; */
+    /*   transform: translateY(0); */
+    /* } */
   </style>
 </head>
 <body>
-  <div id="container"></div>
+  <div id="word"></div>
+
 
   <script>
     const words = [
@@ -79,22 +80,19 @@
       "Word", "by", "word."
     ];
 
-    const container = document.getElementById('container');
+    // const container = document.getElementById('container');
     let index = 0;
+
+    const wordElement = document.getElementById('word');
 
     function drip() {
       if (index >= words.length) return;
 
-      const span = document.createElement('span');
-      span.className = 'word';
-      span.textContent = words[index] + ' ';
-      container.appendChild(span);
-
-      requestAnimationFrame(() => span.classList.add('show'));
-
+      wordElement.textContent = words[index] === "" ? "\u00A0" : words[index];
       index++;
-      setTimeout(drip, 6000); // 6 seconds per word
+      setTimeout(drip, 2000); // 6s per word
     }
+
 
     drip();
   </script>
