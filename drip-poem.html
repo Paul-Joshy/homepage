@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A quiet place on the internet.</title>
+  <style>
+    body {
+      background-color: #0e0e0e;
+      color: #d8d8d8;
+      font-family: 'Space Mono', monospace;
+      padding: 60px 40px;
+      max-width: 600px;
+      margin: auto;
+      line-height: 2;
+      font-size: 1.5rem;
+    }
+    #container {
+      white-space: pre-wrap;
+    }
+    .word {
+      opacity: 0;
+      display: inline-block;
+      transition: opacity 1s ease-in, transform 1s ease;
+      transform: translateY(10px);
+    }
+    .word.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    const words = [
+      "Everything", "is", "so", "loud", "now.", "",
+      "Endless", "feeds.", "Endless", "takes.", "",
+      "Scroll.", "Click.", "React.", "Forget.", "",
+      "We", "doomscroll", "through", "grief.", "",
+      "We", "refresh", "through", "silence.", "",
+      "It’s", "always", "breaking.", "",
+      "Always", "trending.", "",
+      "Always", "spinning.", "",
+
+      "But", "this—", "",
+
+      "this", "is", "not", "that", "kind", "of", "place.", "",
+
+      "This", "is", "a", "pause.", "",
+      "A", "rest.", "",
+      "A", "tiny", "room", "tucked", "inside", "the", "internet.", "",
+
+      "No", "infinite", "scroll.", 
+      "No", "likes.", 
+      "No", "algorithms.", "",
+
+      "Just", "words.", "",
+
+      "One", "at", "a", "time.", "",
+
+      "Like", "a", "heartbeat.", "",
+
+      "Like", "a", "friend", "who", "doesn’t", "mind", "pauses", "between", "sentences.", "",
+
+      "You", "don’t", "have", "to", "keep", "up", "here.", "",
+      "You", "don’t", "have", "to", "be", "on.", "",
+
+      "You", "can", "arrive", "tired.", "",
+      "You", "can", "arrive", "numb.", "",
+
+      "This", "place", "will", "still", "hold", "you.", "",
+
+      "Softly.", "",
+
+      "Quietly.", "",
+
+      "Word", "by", "word."
+    ];
+
+    const container = document.getElementById('container');
+    let index = 0;
+
+    function drip() {
+      if (index >= words.length) return;
+
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = words[index] + ' ';
+      container.appendChild(span);
+
+      requestAnimationFrame(() => span.classList.add('show'));
+
+      index++;
+      setTimeout(drip, 6000); // 6 seconds per word
+    }
+
+    drip();
+  </script>
+</body>
+</html>
+

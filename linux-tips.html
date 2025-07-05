@@ -46,7 +46,8 @@
           <td data-label="Action">Prettify HTML</td>
         </tr>
         <tr>
-          <td data-label="Behavior"><pre>:s/\S\+/\=&quot;\&quot;\" . submatch(0) . &quot;\&quot;\r&quot;/g</pre></td>
+          <td data-label="Behavior"><pre>:s/\S\+/\\=&quot;\\&quot;&quot; . submatch(0) . \\&quot;\r&quot;/g
+</pre></td>
 
           <td data-label="Action">Turn every word into a new line and wrap them in double quotes</td>
         </tr>
