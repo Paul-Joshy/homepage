@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" x-data="experienceApp" x-init="init">
+<head>
+  <meta charset="UTF-8">
+  <title>RelateFeed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans text-gray-800">
+  <div class="max-w-2xl mx-auto py-8 px-4 space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold">RelateFeed</h1>
+      <template x-if="!loggedIn">
+        <button @click="showLogin = true" class="text-sm text-blue-600 hover:underline">Login</button>
+      </template>
+      <template x-if="loggedIn">
+        <div class="flex gap-2 items-center">
+          <span class="text-sm">Hi, <strong x-text="username"></strong></span>
+          <button @click="logout" class="text-sm text-red-600 hover:underline">Logout</button>
+        </div>
+      </template>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="flex flex-wrap gap-2 mb-2">
+        <template x-for="(tag, index) in selectedTags" :key="tag">
+          <span class="bg-blue-200 text-blue-800 px-3 py-1 rounded-full flex items-center">
+            <span x-text="tag"></span>
+            <button class="ml-2" @click="removeTag(index)">&times;</button>
+          </span>
+        </template>
+      </div>
+      <input type="text" x-model="searchInput" @input="updateSuggestions" @keydown.backspace="removeLastTag"
+             placeholder="Search identities..."
+             class="w-full border px-3 py-2 rounded"/>
+      <ul class="bg-white border rounded mt-1 max-h-40 overflow-auto" x-show="suggestions.length">
+        <template x-for="s in suggestions" :key="s">
+          <li @click="addTag(s)" class="px-4 py-2 hover:bg-blue-100 cursor-pointer" x-text="s"></li>
+        </template>
+      </ul>
+    </div>
+    <div class="space-y-4">
+      <template x-for="exp in filteredExperiences" :key="exp.id">
+        <div class="bg-white p-4 rounded-lg flex flex-col gap-1 border border-gray-200">
+          <div class="flex justify-between">
+            <span class="font-semibold text-blue-600" x-text="exp.username"></span>
+            <span class="italic text-gray-500 text-sm" x-text="'#' + exp.identity"></span>
+          </div>
+          <p x-text="exp.text" class="mt-1"></p>
+          <button @click="relate(exp.id)"
+                  class="flex items-center gap-1 text-green-600 hover:text-green-700 self-start mt-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span x-text="exp.relateCount"></span> relate
+          </button>
+        </div>
+      </template>
+    </div>
+    <button @click="showModal = true"
+            class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white text-xl w-14 h-14 rounded-full shadow-lg flex items-center justify-center">+</button>
+  </div>
+
+  <!-- Submit Modal -->
+  <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showModal=false" style="backdrop-filter: blur(4px);">
+    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-4">
+      <h2 class="text-xl font-semibold text-center">New Experience</h2>
+      <input type="text" x-model="newIdentity" placeholder="Identity (e.g., autism)" class="w-full px-4 py-2 border rounded"/>
+      <textarea x-model="newText" placeholder="Write your experience..." class="w-full px-4 py-2 border rounded h-24"></textarea>
+      <button @click="submitExperience" class="w-full bg-green-600 text-white py-2 rounded">Submit</button>
+      <button @click="showModal=false" class="w-full border text-gray-600 py-2 rounded">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div x-show="showLogin" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showLogin=false" style="backdrop-filter: blur(4px);">
+    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm space-y-4">
+      <h2 class="text-xl font-semibold text-center">Login</h2>
+      <input x-model="loginUsername" type="text" placeholder="Username" class="w-full px-4 py-2 border rounded"/>
+      <input x-model="loginPassword" type="password" placeholder="Password" class="w-full px-4 py-2 border rounded"/>
+      <button @click="login" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+      <template x-if="loginError">
+        <p class="text-red-500 text-center" x-text="loginError"></p>
+      </template>
+      <p class="text-center text-sm mt-4">
+        Don’t have an account?
+        <button @click="showSignup=true; showLogin=false" class="text-blue-600 hover:underline">Sign up</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div x-show="showSignup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showSignup=false" style="backdrop-filter: blur(4px);">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
+      <h2 class="text-xl font-bold mb-4 text-center">Create Account</h2>
+      <input x-model="signupUsername" type="text" placeholder="Username" class="w-full px-4 py-2 border rounded mb-3"/>
+      <input x-model="signupPassword" type="password" placeholder="Password" class="w-full px-4 py-2 border rounded mb-3"/>
+      <input x-model="signupConfirm" type="password" placeholder="Confirm Password" class="w-full px-4 py-2 border rounded mb-4"/>
+      <button @click="signup()" class="w-full bg-green-600 text-white py-2 rounded">Sign Up</button>
+      <template x-if="signupError">
+        <p class="text-red-500 text-center mt-2" x-text="signupError"></p>
+      </template>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('experienceApp', () => ({
+    USERS_BIN: '68715c11d4a81a1766f4a3f6',
+    EXP_BIN: '68715c5bb5cb8756cb31d8b2',
+    API_KEY: '$2a$10$iMZGgfskMuQRPNQUG46ddOy/kDnb71TNDdCBkgERWU5ponw0NWWEG',
+
+    loggedIn: false,
+    username: '',
+    loginUsername: '', loginPassword: '', loginError: '',
+    signupUsername: '', signupPassword: '', signupConfirm: '', signupError: '',
+    showLogin: false, showSignup: false,
+    showModal: false,
+    newIdentity: '', newText: '',
+    experiences: [],
+    searchInput: '', selectedTags: [], suggestions: [],
+
+    async init() {
+      const saved = localStorage.getItem('relate_user');
+      if (saved) { this.username = saved; this.loggedIn = true; }
+      await this.loadExperiences();
+    },
+    async login() {
+      this.loginError = '';
+      try {
+        const res = await fetch(`https://blue-lake-317a.pauljoshyk96.workers.dev?url=https://api.jsonbin.io/v3/b/${this.USERS_BIN}/latest`, {
+        // via Cloudflare Worker
+          headers: { 'X-Master-Key': this.API_KEY }
+        });
+        const users = (await res.json()).record;
+        const user = users.find(u => u.username === this.loginUsername && u.password === this.loginPassword);
+        if (user) {
+          this.username = user.username;
+          this.loggedIn = true;
+          localStorage.setItem('relate_user', this.username);
+          this.showLogin = false;
+        } else this.loginError = 'Invalid credentials';
+      } catch {
+        this.loginError = 'Login failed';
+      }
+    },
+    async signup() {
+      this.signupError = '';
+      if (!this.signupUsername || !this.signupPassword || !this.signupConfirm) return this.signupError = 'All fields required';
+      if (this.signupPassword !== this.signupConfirm) return this.signupError = 'Passwords do not match';
+      try {
+        const res = await fetch(`https://corsproxy.io/?https://api.jsonbin.io/v3/b/${this.USERS_BIN}/latest`, {
+          headers: { 'X-Master-Key': this.API_KEY }
+        });
+        const users = (await res.json()).record;
+        if (users.find(u => u.username === this.signupUsername)) return this.signupError = 'Username exists';
+        users.push({ username: this.signupUsername, password: this.signupPassword });
+        await fetch(`https://blue-lake-317a.pauljoshyk96.workers.dev?url=https://api.jsonbin.io/v3/b/${this.USERS_BIN}`, {
+        // via Cloudflare Worker
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': this.API_KEY },
+          body: JSON.stringify(users)
+        });
+        this.username = this.signupUsername;
+        this.loggedIn = true;
+        localStorage.setItem('relate_user', this.username);
+        this.showSignup = false;
+      } catch {
+        this.signupError = 'Signup failed';
+      }
+    },
+    logout() {
+      this.loggedIn = false;
+      this.username = '';
+      localStorage.removeItem('relate_user');
+    },
+    async loadExperiences() {
+      const res = await fetch(`https://blue-lake-317a.pauljoshyk96.workers.dev?url=https://api.jsonbin.io/v3/b/${this.EXP_BIN}/latest`, {
+      // via Cloudflare Worker
+        headers: { 'X-Master-Key': this.API_KEY }
+      });
+      this.experiences = (await res.json()).record || [];
+    },
+    async saveExperiences() {
+      await fetch(`https://blue-lake-317a.pauljoshyk96.workers.dev?url=https://api.jsonbin.io/v3/b/${this.EXP_BIN}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': this.API_KEY },
+        body: JSON.stringify(this.experiences)
+      });
+    },
+
+    async relate(id) {
+      if (!this.loggedIn) { this.showLogin = true; return; }
+      const exp = this.experiences.find(e => e.id === id);
+      if (!exp.relaters) exp.relaters = [];
+      if (exp.relaters.includes(this.username)) return;
+      exp.relateCount = (exp.relateCount || 0) + 1;
+      exp.relaters.push(this.username);
+      await this.saveExperiences();
+    },
+    async submitExperience() {
+      if (!this.loggedIn) return this.showLogin = true;
+      if (!this.newText.trim()) return;
+      this.experiences.unshift({
+        id: Date.now(),
+        username: this.username,
+        identity: this.newIdentity || 'unspecified',
+        text: this.newText.trim(),
+        relateCount: 0,
+        relaters: []
+      });
+      this.newText = ''; this.newIdentity = ''; this.showModal = false;
+      await this.saveExperiences();
+    },
+    get filteredExperiences() {
+      if (this.selectedTags.length === 0) return this.experiences;
+      return this.experiences.filter(e => this.selectedTags.includes(e.identity));
+    },
+    updateSuggestions() {
+      const ids = [...new Set(this.experiences.map(e => e.identity))];
+      const input = this.searchInput.toLowerCase();
+      this.suggestions = ids.filter(id =>
+        id.toLowerCase().startsWith(input) && !this.selectedTags.includes(id)
+      );
+    },
+    addTag(tag) {
+      if (!this.selectedTags.includes(tag)) {
+        this.selectedTags.push(tag);
+        this.searchInput = '';
+        this.suggestions = [];
+      }
+    },
+    removeTag(index) {
+      this.selectedTags.splice(index, 1);
+    },
+    removeLastTag() {
+      if (this.searchInput === '') this.selectedTags.pop();
+    }
+  }));
+});
+</script>
+</body>
+</html>
+
