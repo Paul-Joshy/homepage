@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Chat Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background-color: #ece5dd;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 1rem;
+      box-sizing: border-box;
+      font-family: monospace;
+      font-size: 14px;
+      border: none;
+      outline: none;
+      resize: vertical;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      margin: 0.5rem;
+      background-color: #075e54;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 0.5rem;
+      align-self: center;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+
+    .chat {
+      display: inline-block;
+      padding: 0.7em 1em;
+      border-radius: 0.8em;
+      max-width: 80%;
+      word-wrap: break-word;
+      line-height: 1.4;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      position: relative;
+      font-size: 15px;
+    }
+
+    .chat-left {
+      align-self: flex-start;
+      background-color: #ffffff;
+      border-top-left-radius: 0;
+    }
+
+    .chat-right {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+      border-top-right-radius: 0;
+    }
+
+    .sender {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 2px;
+      color: #555;
+    }
+
+    .message {
+      white-space: pre-wrap;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #121b22;
+      }
+      .chat-left {
+        background-color: #1e2c33;
+        color: #ddd;
+      }
+      .chat-right {
+        background-color: #075e54;
+        color: white;
+      }
+      .sender {
+        color: #aaa;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <textarea placeholder="Paste your WhatsApp chat export here..."></textarea>
+  <button onclick="parseChat()">Render Chat</button>
+  <div class="chat-container" id="chatContainer"></div>
+
+  <script>
+    function escapeHTML(str) {
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+    }
+
+    function parseChat() {
+      const input = document.querySelector("textarea").value;
+      const container = document.getElementById("chatContainer");
+      container.innerHTML = "";
+
+      const lines = input.split("\n");
+
+      for (const line of lines) {
+        // Match lines like: [7/18/25, 4:50 PM] Paul Joshy: Message
+        const match = line.match(/^\[?\d{1,2}\/\d{1,2}\/\d{2,4},? \d{1,2}:\d{2}(?:\s?[AP]M)?\]?\s([^:]+):\s([\s\S]*)$/);
+        if (match) {
+          let sender = match[1].trim();
+          let message = escapeHTML(match[2].trim());
+          let align = sender.includes("Paul Joshy") ? "chat-right" : "chat-left";
+
+          const chatHTML = `
+            <div class="chat ${align}">
+              <div class="sender">${sender}</div>
+              <div class="message">${message}</div>
+            </div>
+          `;
+          container.insertAdjacentHTML("beforeend", chatHTML);
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
+
