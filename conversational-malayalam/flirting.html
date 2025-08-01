@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conversational Malayalam – Flirty Edition</title>
+    <link href="../style.css" rel="stylesheet">
+    <style>
+      body.locked {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        /* font-family: sans-serif; */
+        background-color: #f9f9f9;
+      }
+
+      #lockscreen {
+        border: 1px solid #ccc;
+        padding: 2rem;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+
+      #content {
+        display: none;
+        padding: 1rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+
+      th, td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f0f0f0;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body class="locked">
+
+    <div id="lockscreen">
+      <h2>🔒 For Venus Only</h2>
+      <p>Enter the secret password:</p>
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="unlock()">Unlock</button>
+      <p id="error" style="color:red; display:none;">Incorrect password</p>
+    </div>
+
+    <div id="content">
+      <h1>Flirting (Only for Venus)</h1>
+      <p>For your eyes only 💘</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Phrase</th>
+            <th>Pronunciation</th>
+            <th>English Translation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Enikku ninne ishtamaanu</td>
+            <td>eh-nee-ku nin-nay ish-ta-maa-noo</td>
+            <td>I like you</td>
+          </tr>
+          <tr>
+            <td>Ninte chiriyil njan poyi</td>
+            <td>nin-tay chi-ri-yil nyan poi</td>
+            <td>I got lost in your smile</td>
+          </tr>
+          <tr>
+            <td>Oru umma tharamo?</td>
+            <td>o-roo um-ma tha-ra-mo?</td>
+            <td>Can I get a kiss?</td>
+          </tr>
+          <tr>
+            <td>Bhakshanam kazhicho?</td>
+            <td>bhak-sha-nam ka-zhi-cho?</td>
+            <td>Did you eat?</td>
+          </tr>
+          <tr>
+            <td>Ninte kural kettal njan calm aakum</td>
+            <td>nin-tay ku-ral ket-tal nyan calm aa-kum</td>
+            <td>Your voice calms me down</td>
+          </tr>
+          <tr>
+            <td>Chakkare pole sweet aanu nee</td>
+            <td>chak-ka-ray po-lay sweet aa-noo nee</td>
+            <td>You’re as sweet as sugar</td>
+          </tr>
+          <tr>
+            <td>Nokkiyappol mindathe poyi</td>
+            <td>nok-kee-ya-pol min-da-thay poi</td>
+            <td>I forgot everything when I saw you</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><a href="./index.html">← Back to main page</a></p>
+    </div>
+
+    <script>
+      function unlock() {
+        const password = document.getElementById("password").value;
+        if (password.toLowerCase().trim() === "moluse") {
+          document.body.classList.remove("locked");
+          document.getElementById("lockscreen").style.display = "none";
+          document.getElementById("content").style.display = "block";
+        } else {
+          document.getElementById("error").style.display = "block";
+        }
+      }
+
+      document.getElementById("password").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") unlock();
+      });
+    </script>
+  </body>
+</html>
+
